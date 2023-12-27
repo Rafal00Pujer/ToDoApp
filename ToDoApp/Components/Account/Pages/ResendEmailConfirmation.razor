@@ -5,10 +5,11 @@
 @using System.Text.Encodings.Web
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
-@using ToDoApp.Data
+@using ToDoApp.Data;
+@using ToDoApp.Data.Entities
 
-@inject UserManager<ApplicationUser> UserManager
-@inject IEmailSender<ApplicationUser> EmailSender
+@inject UserManager<UserEntity> UserManager
+@inject IEmailSender<UserEntity> EmailSender
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 

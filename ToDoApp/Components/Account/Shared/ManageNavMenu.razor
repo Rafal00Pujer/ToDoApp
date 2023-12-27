@@ -1,7 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using ToDoApp.Data
+@using ToDoApp.Data;
+@using ToDoApp.Data.Entities
 
-@inject SignInManager<ApplicationUser> SignInManager
+@inject SignInManager<UserEntity> SignInManager
 
 <ul class="nav nav-pills flex-column">
     <li class="nav-item">

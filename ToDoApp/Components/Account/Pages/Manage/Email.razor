@@ -5,10 +5,11 @@
 @using System.Text.Encodings.Web
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
-@using ToDoApp.Data
+@using ToDoApp.Data;
+@using ToDoApp.Data.Entities
 
-@inject UserManager<ApplicationUser> UserManager
-@inject IEmailSender<ApplicationUser> EmailSender
+@inject UserManager<UserEntity> UserManager
+@inject IEmailSender<UserEntity> EmailSender
 @inject IdentityUserAccessor UserAccessor
 @inject NavigationManager NavigationManager
 
@@ -16,7 +17,7 @@
 
 <h3>Manage email</h3>
 
-<StatusMessage Message="@message"/>
+<StatusMessage Message="@message" />
 <div class="row">
     <div class="col-md-6">
         <form @onsubmit="OnSendEmailVerificationAsync" @formname="send-verification" id="send-verification-form" method="post">
@@ -55,7 +56,7 @@
 
 @code {
     private string? message;
-    private ApplicationUser user = default!;
+    private UserEntity user = default!;
     private string? email;
     private bool isEmailConfirmed;
 

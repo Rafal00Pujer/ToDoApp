@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Identity;
-using ToDoApp.Data;
+using ToDoApp.Data.Entities;
 
 namespace ToDoApp.Components.Account
 {
-    internal sealed class IdentityUserAccessor(UserManager<ApplicationUser> userManager, IdentityRedirectManager redirectManager)
+    internal sealed class IdentityUserAccessor(UserManager<UserEntity> userManager, IdentityRedirectManager redirectManager)
     {
-        public async Task<ApplicationUser> GetRequiredUserAsync(HttpContext context)
+        public async Task<UserEntity> GetRequiredUserAsync(HttpContext context)
         {
             var user = await userManager.GetUserAsync(context.User);
 
