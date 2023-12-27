@@ -39,6 +39,7 @@ builder.Services.AddIdentityCore<UserEntity>(options => options.SignIn.RequireCo
 builder.Services.AddSingleton<IEmailSender<UserEntity>, IdentityNoOpEmailSender>();
 
 builder.Services.AddScoped<ToDoListService>();
+builder.Services.AddScoped<ToDoTaskService>();
 
 builder.Services.AddAutoMapper(typeof(ToDoListProfile).Assembly);
 

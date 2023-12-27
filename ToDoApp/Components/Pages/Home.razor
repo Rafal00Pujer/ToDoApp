@@ -39,22 +39,7 @@
         {
             foreach (var list in _toDoLists)
             {
-                <div class="col-12">
-                    <div class="row">
-
-                        <div class="col-12">
-                            <h4 class="text-center">@list.Name</h4>
-                        </div>
-
-                        @foreach (var task in list.Tasks)
-                        {
-                            <div class="col-12">
-                                <p>@task.Name</p>
-                            </div>
-                        }
-
-                    </div>
-                </div>
+                <ToDoList List="@list" />
             }
 
             <div class="col-12">

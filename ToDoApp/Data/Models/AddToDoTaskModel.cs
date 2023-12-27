@@ -2,8 +2,9 @@
 
 namespace ToDoApp.Data.Models;
 
-public class AddToDoListModel
+internal class AddToDoTaskModel
 {
-    [Required(AllowEmptyStrings = false)]
     public string Name { get; set; } = default!;
+
+    public Guid ToDoListId { get; set; }
 }

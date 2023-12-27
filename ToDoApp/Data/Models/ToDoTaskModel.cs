@@ -2,7 +2,7 @@
 
 namespace ToDoApp.Data.Models;
 
-internal class ToDoTaskModel
+public class ToDoTaskModel
 {
     public Guid Id { get; set; }
 

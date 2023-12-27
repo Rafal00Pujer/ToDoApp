@@ -1,0 +1,62 @@
+﻿@using ToDoApp.Data.Models
+@using ToDoApp.Services
+
+@inject ToDoTaskService ToDoTaskService
+
+<div class="col-12">
+    <div class="row">
+
+        <div class="col-12">
+            <h4 class="text-center">@List.Name</h4>
+        </div>
+
+        @foreach (var task in List.Tasks)
+        {
+            <div class="col-12">
+                <p>@task.Name</p>
+
+                @if (task.DueDate.HasValue)
+                {
+                    <p>
+                        <span>Due date</span>
+                        <span>@task.DueDate</span>
+                    </p>
+                }
+
+                @if (task.IsCompleted)
+                {
+                    <p>
+                        <span>Completed on</span>
+                        <span>@task.CompletionDate</span>
+                    </p>
+                }
+
+            </div>
+        }
+
+        <div class="col-12 d-flex">
+            <button class="btn btn-primary flex-fill" type="button" @onclick="AddTask">Add task</button>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public ToDoListModel List { get; set; } = default!;
+
+    private async void AddTask()
+    {
+        var dto = new AddToDoTaskModel
+            {
+                Name = "New task",
+                ToDoListId = List.Id
+            };
+
+        var result = await ToDoTaskService.AddTaskToList(dto);
+
+        List.Tasks.Add(result);
+
+        StateHasChanged();
+    }
+}

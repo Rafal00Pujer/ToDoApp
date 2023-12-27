@@ -1,6 +1,6 @@
 ﻿namespace ToDoApp.Data.Models;
 
-internal class ToDoListModel
+public class ToDoListModel
 {
     public Guid Id { get; set; }
 
