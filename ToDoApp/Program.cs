@@ -5,6 +5,8 @@ using ToDoApp.Components;
 using ToDoApp.Components.Account;
 using ToDoApp.Data.Context;
 using ToDoApp.Data.Entities;
+using ToDoApp.MapperProfile;
+using ToDoApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +37,10 @@ builder.Services.AddIdentityCore<UserEntity>(options => options.SignIn.RequireCo
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<UserEntity>, IdentityNoOpEmailSender>();
+
+builder.Services.AddScoped<ToDoListService>();
+
+builder.Services.AddAutoMapper(typeof(ToDoListProfile).Assembly);
 
 var app = builder.Build();
 
