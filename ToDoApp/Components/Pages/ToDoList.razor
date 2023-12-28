@@ -1,6 +1,8 @@
 ﻿@using ToDoApp.Data.Models
 @using ToDoApp.Services
 
+@rendermode InteractiveServer
+
 @inject ToDoTaskService ToDoTaskService
 
 <div class="col-12">
@@ -13,24 +15,39 @@
         @foreach (var task in List.Tasks)
         {
             <div class="col-12">
-                <p>@task.Name</p>
+                <div class="row">
 
-                @if (task.DueDate.HasValue)
-                {
-                    <p>
-                        <span>Due date</span>
-                        <span>@task.DueDate</span>
-                    </p>
-                }
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <input type="text"
+                                   value="@task.Name"
+                                   @onchange="@((ChangeEventArgs __e) => UpdateTaskName(task, __e?.Value))"
+                                   class="form-control" id="nameInput" />
+                            <label for="nameInput">Task name</label>
+                        </div>
+                    </div>
 
-                @if (task.IsCompleted)
-                {
-                    <p>
-                        <span>Completed on</span>
-                        <span>@task.CompletionDate</span>
-                    </p>
-                }
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <input type="datetime-local"
+                                   value="@task.DueDate?.ToString("yyyy-MM-ddThh:mm:ss")"
+                                   @onchange="@((ChangeEventArgs __e) => UpdateTaskDueDate(task, __e?.Value))"
+                                   class="form-control" id="dueDateInput" />
+                            <label for="dueDateInput">Due date</label>
+                        </div>
+                    </div>
 
+                    @if (task.IsCompleted)
+                    {
+                        <div class="col-12">
+                            <p>
+                                <span>Completed on</span>
+                                <span>@task.CompletionDate</span>
+                            </p>
+                        </div>
+                    }
+
+                </div>
             </div>
         }
 
@@ -58,5 +75,28 @@
         List.Tasks.Add(result);
 
         StateHasChanged();
+    }
+
+    private async void UpdateTaskName(ToDoTaskModel task, object? newName)
+    {
+        var value = (string)newName!;
+
+        await ToDoTaskService.UpdateName(task.Id, value);
+
+        task.Name = value;
+    }
+
+    private async void UpdateTaskDueDate(ToDoTaskModel task, object? newDueDate)
+    {
+        DateTime? value = null;
+
+        if (DateTime.TryParse((string)newDueDate!, out DateTime newValue))
+        {
+            value = newValue;
+        }
+
+        await ToDoTaskService.UpdateDueDate(task.Id, value);
+
+        task.DueDate = value;
     }
 }
