@@ -4,7 +4,7 @@ using ToDoApp.Data.Models;
 
 namespace ToDoApp.MapperProfile;
 
-internal class ToDoListProfile : Profile
+public class ToDoListProfile : Profile
 {
     public ToDoListProfile()
     {

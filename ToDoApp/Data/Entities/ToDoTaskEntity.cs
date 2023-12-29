@@ -2,7 +2,7 @@
 
 namespace ToDoApp.Data.Entities;
 
-internal class ToDoTaskEntity
+public class ToDoTaskEntity
 {
     public Guid Id { get; set; }
 

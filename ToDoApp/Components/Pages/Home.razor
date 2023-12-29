@@ -93,7 +93,7 @@
 
         var userId = state.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
 
-        _toDoLists = await ToDoListService.GetToDoListsForUser(userId);
+        _toDoLists = await ToDoListService.GetToDoListsForUserAsync(userId);
     }
 
     private string GetFieldCssClass<TField>(System.Linq.Expressions.Expression<Func<TField>> field) => _editContext!.FieldCssClass(field);
@@ -104,7 +104,7 @@
 
         var userId = state.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
 
-        var result = await ToDoListService.AddToDoList(_newToDoList!, userId);
+        var result = await ToDoListService.AddToDoListToUserAsync(_newToDoList!, userId);
 
         if (_toDoLists is null)
         {
@@ -120,7 +120,7 @@
 
     private async void DeleteToDoList(ToDoListModel list)
     {
-        await ToDoListService.DeleteList(list.Id);
+        await ToDoListService.DeleteToDoListAsync(list.Id);
 
         _toDoLists!.Remove(list);
 

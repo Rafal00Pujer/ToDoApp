@@ -6,9 +6,9 @@ using ToDoApp.Data.Models;
 
 namespace ToDoApp.Services;
 
-internal class ToDoListService(ToDoContext context, IMapper mapper)
+public class ToDoListService(ToDoContext context, IMapper mapper)
 {
-    public async Task<List<ToDoListModel>> GetToDoListsForUser(string userId)
+    public async Task<List<ToDoListModel>> GetToDoListsForUserAsync(string userId)
     {
         var query = context.ToDoLists
             .Include(x => x.Tasks
@@ -21,15 +21,15 @@ internal class ToDoListService(ToDoContext context, IMapper mapper)
         return dto;
     }
 
-    public async Task<ToDoListModel> AddToDoList(AddToDoListModel model, string ownerId)
+    public async Task<ToDoListModel> AddToDoListToUserAsync(AddToDoListModel model, string userId)
     {
         ArgumentNullException.ThrowIfNull(model);
 
-        var owner = await context.Users.FindAsync(ownerId);
+        var owner = await context.Users.FindAsync(userId);
 
         if (owner is null)
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"User with id:{userId} doesn't exist.");
         }
 
         var toDoListEntity = new ToDoListEntity
@@ -45,13 +45,13 @@ internal class ToDoListService(ToDoContext context, IMapper mapper)
         return dto;
     }
 
-    public async Task DeleteList(Guid listId)
+    public async Task DeleteToDoListAsync(Guid toDoListId)
     {
-        var list = await context.ToDoLists.FindAsync(listId);
+        var list = await context.ToDoLists.FindAsync(toDoListId);
 
         if (list is null)
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"To do list with id:{toDoListId} doesn't exist.");
         }
 
         context.ToDoLists.Remove(list);

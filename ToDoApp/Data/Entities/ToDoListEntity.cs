@@ -1,6 +1,6 @@
 ﻿namespace ToDoApp.Data.Entities;
 
-internal class ToDoListEntity
+public class ToDoListEntity
 {
     public Guid Id { get; set; }
 

@@ -4,7 +4,7 @@ using ToDoApp.Data.Entities;
 
 namespace ToDoApp.Data.Context;
 
-internal class ToDoContext(DbContextOptions options) : IdentityDbContext<UserEntity>(options)
+public class ToDoContext(DbContextOptions options) : IdentityDbContext<UserEntity>(options)
 {
     public DbSet<ToDoListEntity> ToDoLists { get; set; }
 
