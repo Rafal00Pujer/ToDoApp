@@ -99,4 +99,18 @@ internal class ToDoTaskService(ToDoContext context, IMapper mapper)
 
         return task.CompletionDate;
     }
+
+    public async Task Delete(Guid ToDoTaskId)
+    {
+        var task = await context.ToDoTasks.FindAsync(ToDoTaskId);
+
+        if (task is null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        context.ToDoTasks.Remove(task);
+
+        await context.SaveChangesAsync();
+    }
 }

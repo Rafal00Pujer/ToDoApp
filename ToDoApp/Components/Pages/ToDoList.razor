@@ -5,19 +5,19 @@
 
 @inject ToDoTaskService ToDoTaskService
 
-<div class="col-12">
-    <div class="row">
+<div class="col-12 col-lg-6 col-xxl-4 py-2 my-1 border border-2 border-primary rounded-3">
+    <div class="row mx-1">
 
-        <div class="col-12">
+        <div class="col-12 my-2">
             <h4 class="text-center">@List.Name</h4>
         </div>
 
         @foreach (var task in List.Tasks)
         {
-            <div class="col-12">
+            <div class="col-12 py-2 my-1 bg-primary bg-opacity-25 border border-primary rounded-2">
                 <div class="row">
 
-                    <div class="col-12">
+                    <div class="col-12 mb-1">
                         <div class="form-floating">
                             <input type="text"
                                    value="@task.Name"
@@ -27,7 +27,7 @@
                         </div>
                     </div>
 
-                    <div class="col-12">
+                    <div class="col-12 mb-1">
                         <div class="form-floating">
                             <input type="datetime-local"
                                    value="@task.DueDate?.ToString("yyyy-MM-ddThh:mm:ss")"
@@ -37,30 +37,37 @@
                         </div>
                     </div>
 
-                    <div class="col-12">
+                    <div class="col-12 mb-1">
                         <div class="input-group">
                             <span class="input-group-text">Completed</span>
 
                             <div class="input-group-text">
-                                <input type="checkbox"
-                                       checked="@task.IsCompleted"
+                                <input type="checkbox" checked="@task.IsCompleted"
                                        @onchange="@((ChangeEventArgs __e) => UpdateTaskIsCompleted(task, __e?.Value))" />
                             </div>
 
                             @if (task.IsCompleted)
                             {
                                 <span class="input-group-text">on</span>
-                                <span class="input-group-text">@task.CompletionDate.Value.ToString("yyyy-MM-ddThh:mm:ss")</span>
+                                <span class="input-group-text">@task.CompletionDate.Value.ToString("dd-MM-yyyy hh:mm:ss")</span>
                             }
                         </div>
+                    </div>
+
+                    <div class="col-12 d-flex py-2 my-1">
+                        <button class="btn btn-danger flex-fill" type="button" @onclick="() => DeleteTask(task)">Delete</button>
                     </div>
 
                 </div>
             </div>
         }
 
-        <div class="col-12 d-flex">
+        <div class="col-12 d-flex py-2 my-1">
             <button class="btn btn-primary flex-fill" type="button" @onclick="AddTask">Add task</button>
+        </div>
+
+        <div class="col-12 d-flex py-2 my-1">
+            <button class="btn btn-danger flex-fill" type="button" @onclick="DeleteListCallback">Delete list</button>
         </div>
 
     </div>
@@ -69,6 +76,9 @@
 @code {
     [Parameter]
     public ToDoListModel List { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> DeleteListCallback { get; set; } = default;
 
     private async void AddTask()
     {
@@ -116,6 +126,15 @@
 
         task.IsCompleted = value;
         task.CompletionDate = result;
+
+        StateHasChanged();
+    }
+
+    private async void DeleteTask(ToDoTaskModel task)
+    {
+        await ToDoTaskService.Delete(task.Id);
+
+        List.Tasks.Remove(task);
 
         StateHasChanged();
     }

@@ -44,4 +44,18 @@ internal class ToDoListService(ToDoContext context, IMapper mapper)
         var dto = mapper.Map<ToDoListModel>(toDoListEntity);
         return dto;
     }
+
+    public async Task DeleteList(Guid listId)
+    {
+        var list = await context.ToDoLists.FindAsync(listId);
+
+        if (list is null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        context.ToDoLists.Remove(list);
+
+        await context.SaveChangesAsync();
+    }
 }
