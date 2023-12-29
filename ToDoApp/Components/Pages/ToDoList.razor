@@ -37,15 +37,23 @@
                         </div>
                     </div>
 
-                    @if (task.IsCompleted)
-                    {
-                        <div class="col-12">
-                            <p>
-                                <span>Completed on</span>
-                                <span>@task.CompletionDate</span>
-                            </p>
+                    <div class="col-12">
+                        <div class="input-group">
+                            <span class="input-group-text">Completed</span>
+
+                            <div class="input-group-text">
+                                <input type="checkbox"
+                                       checked="@task.IsCompleted"
+                                       @onchange="@((ChangeEventArgs __e) => UpdateTaskIsCompleted(task, __e?.Value))" />
+                            </div>
+
+                            @if (task.IsCompleted)
+                            {
+                                <span class="input-group-text">on</span>
+                                <span class="input-group-text">@task.CompletionDate.Value.ToString("yyyy-MM-ddThh:mm:ss")</span>
+                            }
                         </div>
-                    }
+                    </div>
 
                 </div>
             </div>
@@ -98,5 +106,17 @@
         await ToDoTaskService.UpdateDueDate(task.Id, value);
 
         task.DueDate = value;
+    }
+
+    private async void UpdateTaskIsCompleted(ToDoTaskModel task, object? newIsCompleted)
+    {
+        var value = (bool)newIsCompleted!;
+
+        var result = await ToDoTaskService.UpdateIsCompleted(task.Id, value);
+
+        task.IsCompleted = value;
+        task.CompletionDate = result;
+
+        StateHasChanged();
     }
 }

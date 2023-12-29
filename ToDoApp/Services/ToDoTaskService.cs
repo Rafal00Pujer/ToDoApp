@@ -74,4 +74,29 @@ internal class ToDoTaskService(ToDoContext context, IMapper mapper)
 
         await context.SaveChangesAsync();
     }
+
+    public async Task<DateTime?> UpdateIsCompleted(Guid ToDoTaskId, bool newIsCompleted)
+    {
+        var task = await context.ToDoTasks.FindAsync(ToDoTaskId);
+
+        if (task is null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        task.IsCompleted = newIsCompleted;
+
+        if (task.IsCompleted)
+        {
+            task.CompletionDate = DateTime.Now;
+        }
+        else
+        {
+            task.CompletionDate = null;
+        }
+
+        await context.SaveChangesAsync();
+
+        return task.CompletionDate;
+    }
 }
