@@ -7,11 +7,11 @@ using ToDoApp.Data.Models;
 
 namespace ToDoApp.Services;
 
-internal class ToDoTaskService(ToDoContext context, IMapper mapper)
+public class ToDoTaskService(ToDoContext context, IMapper mapper)
 {
     const int SortWeightInterval = 100_000;
 
-    public async Task<ToDoTaskModel> AddTaskToList(AddToDoTaskModel model)
+    public async Task<ToDoTaskModel> AddTaskToToDoList(AddToDoTaskModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
 
@@ -22,7 +22,7 @@ internal class ToDoTaskService(ToDoContext context, IMapper mapper)
 
         if (toDoList is null)
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"To do list with id:{model.ToDoListId} doesn't exist.");
         }
 
         int sortWeight = SortWeightInterval;
@@ -47,13 +47,15 @@ internal class ToDoTaskService(ToDoContext context, IMapper mapper)
         return result;
     }
 
-    public async Task UpdateName(Guid ToDoTaskId, string newName)
+    public async Task UpdateTaskName(Guid ToDoTaskId, string newName)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(newName);
+
         var task = await context.ToDoTasks.FindAsync(ToDoTaskId);
 
         if (task is null)
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"To do Task with id:{ToDoTaskId} doesn't exist.");
         }
 
         task.Name = newName;
@@ -61,7 +63,7 @@ internal class ToDoTaskService(ToDoContext context, IMapper mapper)
         await context.SaveChangesAsync();
     }
 
-    public async Task UpdateDueDate(Guid ToDoTaskId, DateTime? newDueTime)
+    public async Task UpdateTaskDueDate(Guid ToDoTaskId, DateTime? newDueTime)
     {
         var task = await context.ToDoTasks.FindAsync(ToDoTaskId);
 
@@ -75,7 +77,7 @@ internal class ToDoTaskService(ToDoContext context, IMapper mapper)
         await context.SaveChangesAsync();
     }
 
-    public async Task<DateTime?> UpdateIsCompleted(Guid ToDoTaskId, bool newIsCompleted)
+    public async Task<DateTime?> UpdateTaskIsCompleted(Guid ToDoTaskId, bool newIsCompleted)
     {
         var task = await context.ToDoTasks.FindAsync(ToDoTaskId);
 
@@ -100,7 +102,7 @@ internal class ToDoTaskService(ToDoContext context, IMapper mapper)
         return task.CompletionDate;
     }
 
-    public async Task Delete(Guid ToDoTaskId)
+    public async Task DeleteTask(Guid ToDoTaskId)
     {
         var task = await context.ToDoTasks.FindAsync(ToDoTaskId);
 

@@ -1,7 +1,4 @@
-﻿using AutoFixture;
-using Microsoft.EntityFrameworkCore;
-using ToDoApp.Data.Entities;
-using ToDoApp.Data.Models;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace ToDoTests.Tests;
 

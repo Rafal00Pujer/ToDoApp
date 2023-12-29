@@ -2,7 +2,7 @@
 
 namespace ToDoApp.Data.Models;
 
-internal class AddToDoTaskModel
+public class AddToDoTaskModel
 {
     public string Name { get; set; } = default!;
 

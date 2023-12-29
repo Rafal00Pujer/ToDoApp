@@ -5,3 +5,6 @@ global using FluentAssertions;
 global using Moq;
 global using ToDoApp.Services;
 global using ToDoApp.Data.Context;
+global using AutoFixture;
+global using ToDoApp.Data.Entities;
+global using ToDoApp.Data.Models;
