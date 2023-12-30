@@ -30,7 +30,7 @@ public class ToDoTaskServiceTests : IClassFixture<DatabaseContextFixture>, IClas
         // Arrange
 
         // Act
-        var action = async () => await _sut.AddTaskToToDoList(null!);
+        var action = async () => await _sut.AddTaskToToDoListAsync(null!);
 
         // Assert
         await action.Should().ThrowExactlyAsync<ArgumentNullException>();
@@ -43,7 +43,7 @@ public class ToDoTaskServiceTests : IClassFixture<DatabaseContextFixture>, IClas
         var model = _fixture.Create<AddToDoTaskModel>();
 
         // Act
-        var action = async () => await _sut.AddTaskToToDoList(model);
+        var action = async () => await _sut.AddTaskToToDoListAsync(model);
 
         // Assert
         await action.Should().ThrowExactlyAsync<InvalidOperationException>()
@@ -71,7 +71,7 @@ public class ToDoTaskServiceTests : IClassFixture<DatabaseContextFixture>, IClas
             .Create();
 
         // Act
-        var result = await _sut.AddTaskToToDoList(model);
+        var result = await _sut.AddTaskToToDoListAsync(model);
 
         // Assert
         var taskInDatabase = await _context.ToDoTasks.FirstOrDefaultAsync();
@@ -91,7 +91,7 @@ public class ToDoTaskServiceTests : IClassFixture<DatabaseContextFixture>, IClas
         // Arrange
 
         // Act
-        var action = async () => await _sut.UpdateTaskName(Guid.NewGuid(), string.Empty);
+        var action = async () => await _sut.UpdateTaskNameAsync(Guid.NewGuid(), string.Empty);
 
         // Assert
         await action.Should().ThrowAsync<ArgumentException>();
@@ -105,7 +105,7 @@ public class ToDoTaskServiceTests : IClassFixture<DatabaseContextFixture>, IClas
         var newName = _fixture.Create<string>();
 
         // Act
-        var action = async () => await _sut.UpdateTaskName(taskId, newName);
+        var action = async () => await _sut.UpdateTaskNameAsync(taskId, newName);
 
         // Assert
         await action.Should().ThrowExactlyAsync<InvalidOperationException>()
@@ -135,13 +135,194 @@ public class ToDoTaskServiceTests : IClassFixture<DatabaseContextFixture>, IClas
         var newName = _fixture.Create<string>();
 
         // Act
-        await _sut.UpdateTaskName(task.Id, newName);
+        await _sut.UpdateTaskNameAsync(task.Id, newName);
 
         // Assert
         var taskInDatabase = await _context.ToDoTasks.FirstOrDefaultAsync();
 
         taskInDatabase.Should().NotBeNull();
         taskInDatabase!.Name.Should().Be(newName);
+    }
+
+    [Fact]
+    public async Task UpdateTaskDueDate_InvalidTaskId_ThrowsException()
+    {
+        // Arrange
+        var taskId = Guid.NewGuid();
+        var newDueDate = _fixture.Create<DateTime>();
+
+        // Act
+        var action = async () => await _sut.UpdateTaskDueDateAsync(taskId, newDueDate);
+
+        // Assert
+        await action.Should().ThrowExactlyAsync<InvalidOperationException>()
+            .WithMessage($"To do Task with id:{taskId} doesn't exist.");
+    }
+
+    [Fact]
+    public async Task UpdateTaskDueDate_ValidTaskIdAndNewDueDate_UpdatesDueDate()
+    {
+        // Arrange
+        var user = _fixture.Build<UserEntity>()
+            .Without(x => x.ToDoLists)
+            .Create();
+
+        var toDoList = _fixture.Build<ToDoListEntity>()
+            .With(x => x.User, user)
+            .Without(x => x.Tasks)
+            .Create();
+
+        var task = _fixture.Build<ToDoTaskEntity>()
+            .With(x => x.ToDoList, toDoList)
+            .Create();
+
+        await _context.ToDoTasks.AddAsync(task);
+        await _context.SaveChangesAsync();
+
+        var newDueDate = _fixture.Create<DateTime>();
+
+        // Act
+        await _sut.UpdateTaskDueDateAsync(task.Id, newDueDate);
+
+        // Assert
+        var taskInDatabase = await _context.ToDoTasks.FirstOrDefaultAsync();
+
+        taskInDatabase.Should().NotBeNull();
+        taskInDatabase!.DueDate.Should().Be(newDueDate);
+    }
+
+    [Fact]
+    public async Task UpdateTaskIsCompleted_InvalidTaskId_ThrowsException()
+    {
+        // Arrange
+        var taskId = Guid.NewGuid();
+        var newIsCompleted = _fixture.Create<bool>();
+
+        // Act
+        var action = async () => await _sut.UpdateTaskIsCompletedAsync(taskId, newIsCompleted);
+
+        // Assert
+        await action.Should().ThrowExactlyAsync<InvalidOperationException>()
+            .WithMessage($"To do Task with id:{taskId} doesn't exist.");
+    }
+
+    [Fact]
+    public async Task UpdateTaskIsCompleted_ValidTaskIdAndFalseIsCompleted_UpdatesIsCompletedAndReturnsNull()
+    {
+        // Arrange
+        var user = _fixture.Build<UserEntity>()
+            .Without(x => x.ToDoLists)
+            .Create();
+
+        var toDoList = _fixture.Build<ToDoListEntity>()
+            .With(x => x.User, user)
+            .Without(x => x.Tasks)
+            .Create();
+
+        var task = _fixture.Build<ToDoTaskEntity>()
+            .With(x => x.ToDoList, toDoList)
+            .Create();
+
+        await _context.ToDoTasks.AddAsync(task);
+        await _context.SaveChangesAsync();
+
+        var newIsCompleted = false;
+
+        // Act
+        var result = await _sut.UpdateTaskIsCompletedAsync(task.Id, newIsCompleted);
+
+        // Assert
+        var taskInDatabase = await _context.ToDoTasks.FirstOrDefaultAsync();
+
+        taskInDatabase.Should().NotBeNull();
+        taskInDatabase!.IsCompleted.Should().Be(newIsCompleted);
+        taskInDatabase.CompletionDate.Should().BeNull();
+
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task UpdateTaskIsCompleted_ValidTaskIdAndTureIsCompleted_UpdatesIsCompletedAndReturnsCurrentDate()
+    {
+        // Arrange
+        var user = _fixture.Build<UserEntity>()
+            .Without(x => x.ToDoLists)
+            .Create();
+
+        var toDoList = _fixture.Build<ToDoListEntity>()
+            .With(x => x.User, user)
+            .Without(x => x.Tasks)
+            .Create();
+
+        var task = _fixture.Build<ToDoTaskEntity>()
+            .With(x => x.ToDoList, toDoList)
+            .Create();
+
+        await _context.ToDoTasks.AddAsync(task);
+        await _context.SaveChangesAsync();
+
+        var newIsCompleted = true;
+        var currentDate = DateTime.Now;
+
+        // Act
+        await _sut.UpdateTaskIsCompletedAsync(task.Id, newIsCompleted);
+
+        // Act
+        var result = await _sut.UpdateTaskIsCompletedAsync(task.Id, newIsCompleted);
+
+        // Assert
+        var taskInDatabase = await _context.ToDoTasks.FirstOrDefaultAsync();
+
+        taskInDatabase.Should().NotBeNull();
+        taskInDatabase!.IsCompleted.Should().Be(newIsCompleted);
+        taskInDatabase.CompletionDate.Should().NotBeNull()
+            .And.BeCloseTo(currentDate, TimeSpan.FromSeconds(5));
+
+        result.Should().NotBeNull()
+            .And.BeCloseTo(currentDate, TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    public async Task DeleteTask_InvalidTaskId_ThrowsException()
+    {
+        // Arrange
+        var taskId = Guid.NewGuid();
+
+        // Act
+        var action = async () => await _sut.DeleteTaskAsync(taskId);
+
+        // Assert
+        await action.Should().ThrowExactlyAsync<InvalidOperationException>()
+            .WithMessage($"To do Task with id:{taskId} doesn't exist.");
+    }
+
+    [Fact]
+    public async Task DeleteTask_ValidTaskId_DeletesTask()
+    {
+        // Arrange
+        var user = _fixture.Build<UserEntity>()
+            .Without(x => x.ToDoLists)
+            .Create();
+
+        var toDoList = _fixture.Build<ToDoListEntity>()
+            .With(x => x.User, user)
+            .Without(x => x.Tasks)
+            .Create();
+
+        var task = _fixture.Build<ToDoTaskEntity>()
+            .With(x => x.ToDoList, toDoList)
+            .Create();
+
+        await _context.ToDoTasks.AddAsync(task);
+        await _context.SaveChangesAsync();
+
+        // Act
+        await _sut.DeleteTaskAsync(task.Id);
+
+        // Assert
+        var taskInDatabase = await _context.ToDoTasks.FirstOrDefaultAsync();
+
+        taskInDatabase.Should().BeNull();
     }
 
     public void Dispose()

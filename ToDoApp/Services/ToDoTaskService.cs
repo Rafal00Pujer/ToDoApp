@@ -11,7 +11,7 @@ public class ToDoTaskService(ToDoContext context, IMapper mapper)
 {
     const int SortWeightInterval = 100_000;
 
-    public async Task<ToDoTaskModel> AddTaskToToDoList(AddToDoTaskModel model)
+    public async Task<ToDoTaskModel> AddTaskToToDoListAsync(AddToDoTaskModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
 
@@ -47,7 +47,7 @@ public class ToDoTaskService(ToDoContext context, IMapper mapper)
         return result;
     }
 
-    public async Task UpdateTaskName(Guid ToDoTaskId, string newName)
+    public async Task UpdateTaskNameAsync(Guid ToDoTaskId, string newName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(newName);
 
@@ -63,13 +63,13 @@ public class ToDoTaskService(ToDoContext context, IMapper mapper)
         await context.SaveChangesAsync();
     }
 
-    public async Task UpdateTaskDueDate(Guid ToDoTaskId, DateTime? newDueTime)
+    public async Task UpdateTaskDueDateAsync(Guid ToDoTaskId, DateTime? newDueTime)
     {
         var task = await context.ToDoTasks.FindAsync(ToDoTaskId);
 
         if (task is null)
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"To do Task with id:{ToDoTaskId} doesn't exist.");
         }
 
         task.DueDate = newDueTime;
@@ -77,13 +77,13 @@ public class ToDoTaskService(ToDoContext context, IMapper mapper)
         await context.SaveChangesAsync();
     }
 
-    public async Task<DateTime?> UpdateTaskIsCompleted(Guid ToDoTaskId, bool newIsCompleted)
+    public async Task<DateTime?> UpdateTaskIsCompletedAsync(Guid ToDoTaskId, bool newIsCompleted)
     {
         var task = await context.ToDoTasks.FindAsync(ToDoTaskId);
 
         if (task is null)
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"To do Task with id:{ToDoTaskId} doesn't exist.");
         }
 
         task.IsCompleted = newIsCompleted;
@@ -102,13 +102,13 @@ public class ToDoTaskService(ToDoContext context, IMapper mapper)
         return task.CompletionDate;
     }
 
-    public async Task DeleteTask(Guid ToDoTaskId)
+    public async Task DeleteTaskAsync(Guid ToDoTaskId)
     {
         var task = await context.ToDoTasks.FindAsync(ToDoTaskId);
 
         if (task is null)
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"To do Task with id:{ToDoTaskId} doesn't exist.");
         }
 
         context.ToDoTasks.Remove(task);
